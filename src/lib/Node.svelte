@@ -1,18 +1,20 @@
 <script>
+  import { transform } from "@babel/standalone";
   import { graph } from "./stores.js";
   import { connection_list } from "./stores.js";
 
   export let id;
 
   let input = 0;
-  $: output = input + adder;
-
-  let adder = 0;
+  let expr;
+  $: output = transform(expr, {}).code;
 
   $: graph.update((val) => {
-    val[id] = {
-      output: output,
-    };
+    if (output) {
+      val[id] = {
+        output: output,
+      };
+    }
     return val;
   });
 
@@ -32,6 +34,7 @@
     id: {id}
     | input: {input}
   </span>
-  | add: <input type="number" bind:value={adder} />
-  -> {output}
+  | expr: <input bind:value={expr} />
+  <!--  | add: <input type="number" bind:value={adder} />
+--> -> {output}
 </div>
